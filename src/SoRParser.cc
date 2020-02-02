@@ -236,10 +236,13 @@ void SoRParser::setDataStart(unsigned int start) {
 void SoRParser::setDataSize(unsigned int size) {
     dataSize = size;
     if (dataStart + dataSize < std::filesystem::file_size(filename)) {
-        std::streampos currentPos = data.tellg();
-        dataEnd = data.ignore(size).tellg();
         data.clear();
-        data.seekg(currentPos);
+        data.seekg(0, std::ios_base::beg);
+        data.ignore(dataStart + size);
+        dataEnd = data.tellg();
+        clearCache();
+        data.seekg(seenCaches.front());
+        fillCache();
     }
 }
 /**
