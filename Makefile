@@ -10,8 +10,8 @@ sorer: $(SRCS) $(HDRS)
 	g++ $(CXX_FLAGS) $(SRCS)
 
 build:
-	sudo docker build -t sorer:0.1 .
-	sudo docker run -ti -v "`pwd`":/test sorer:0.1 bash -c "cd /test ; make sorer"
+	docker build -t sorer:0.1 .
+	docker run -ti -v "`pwd`":/test sorer:0.1 bash -c "cd /test ; make sorer"
 
 run: sorer
 	./sorer -f file.txt
