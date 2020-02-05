@@ -1,7 +1,9 @@
 #pragma once
 
+#include <array>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -20,6 +22,10 @@ std::ostream& operator<<(std::ostream& os,
                          const std::optional<SoRType>& optType);
 std::ostream& operator<<(std::ostream& os,
                          const std::optional<std::string>& optStr);
+
+namespace {
+constexpr size_t READBUFFER_SIZE_BYTES = 1024 * 1024;
+}  // namespace
 
 /**
  * @brief A parser that handles interpreting schema-on-read data files
@@ -74,10 +80,11 @@ class SoRParser {
                     //! CACHE_SIZE
     std::vector<std::streampos> seenCaches;  //! Stream positions of cache start
                                              //! locations in ascending order
-    std::string filename;                    //! The data's filename
+    size_t filesize;                         //! The size of the file
     std::streampos dataEnd;  //! The end of the file, only relevant if dataSize
                              //! is smaller than the file size from the start
                              //! offset
+    std::shared_ptr<std::array<char, READBUFFER_SIZE_BYTES>> readBuffer;
 
     //! Determines the schema of the file using a sample of raw lines
     void setSchema(std::vector<std::string>& sample);

@@ -1,8 +1,6 @@
 #include <algorithm>
 #include <exception>
 #include <filesystem>
-#include <fstream>
-#include <iostream>
 #include <sstream>
 
 #include "OptParser.hh"
@@ -46,7 +44,13 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 SoRParser::SoRParser()
-    : dataStart(0), dataSize(0), numCols(0), cacheOffset(0) {}
+    : dataStart(0),
+      dataSize(0),
+      numCols(0),
+      cacheOffset(0),
+      readBuffer(std::make_shared<std::array<char, READBUFFER_SIZE_BYTES>>()) {
+    data.rdbuf()->pubsetbuf(readBuffer->data(), readBuffer->size());
+}
 /**
  * @brief
  * @brief Initialize the parser
@@ -210,13 +214,12 @@ void SoRParser::setData(const std::string& path) {
     data.seekg(0, std::ios_base::beg);
     seenCaches.push_back(data.tellg());
 
-    filename = path;
-    dataSize = std::filesystem::file_size(path);
+    filesize = std::filesystem::file_size(path);
+    dataSize = filesize;
 }
 
 void SoRParser::setDataStart(unsigned int start) {
-    if (start >= std::filesystem::file_size(filename))
-        throw std::out_of_range("Data start past EOF");
+    if (start >= filesize) throw std::out_of_range("Data start past EOF");
 
     clearCache();
     seenCaches.clear();
@@ -235,7 +238,7 @@ void SoRParser::setDataStart(unsigned int start) {
 
 void SoRParser::setDataSize(unsigned int size) {
     dataSize = size;
-    if (dataStart + dataSize < std::filesystem::file_size(filename)) {
+    if (dataStart + dataSize < filesize) {
         data.clear();
         data.seekg(0, std::ios_base::beg);
         data.ignore(dataStart + size);
@@ -255,8 +258,6 @@ void SoRParser::setSchema(std::vector<std::string>& sample) {
     for (std::string& line : sample) {
         // split line into fields (i.e. things between tags)
         SoRRow fields = parseFields(line);
-
-        if (fields.empty()) continue;
 
         // use longest line for the schema
         numCols = numCols < fields.size() ? fields.size() : numCols;
@@ -400,13 +401,11 @@ void SoRParser::loadCache(size_t cacheNum) {
                 seenCaches.push_back(data.tellg());
                 seenRows = 0;
             }
-            std::string line;
-            std::getline(data, line);
-            if (dataStart + dataSize < std::filesystem::file_size(filename) &&
-                data.tellg() >= dataEnd)
+
+            data.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            if (dataStart + dataSize < filesize && data.tellg() >= dataEnd)
                 break;
-            SoRRow row = parseFields(line);
-            if (row.empty()) continue;
             seenRows++;
         }
     }
@@ -434,9 +433,7 @@ void SoRParser::fillCache() {
         std::string line;
         std::getline(data, line, '\n');
         SoRRow row = parseFields(line);
-        if (row.empty()) continue;
-        if (dataStart + dataSize >= std::filesystem::file_size(filename) ||
-            data.tellg() < dataEnd)
+        if (dataStart + dataSize >= filesize || data.tellg() < dataEnd)
             addRow(row);
         else
             return;
