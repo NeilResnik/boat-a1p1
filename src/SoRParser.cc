@@ -69,6 +69,9 @@ bool SoRParser::initialize(std::string& filename) {
     // Read first 500 lines, get schema
     readInitial();
 
+    // Fill rest of cache
+    fillCache();
+
     return true;
 }
 
