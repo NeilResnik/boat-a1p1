@@ -433,7 +433,8 @@ void SoRParser::fillCache() {
         std::string line;
         std::getline(data, line, '\n');
         SoRRow row = parseFields(line);
-        if (dataStart + dataSize >= filesize || data.tellg() < dataEnd)
+        if (!data.eof() &&
+            (dataStart + dataSize >= filesize || data.tellg() < dataEnd))
             addRow(row);
         else
             return;
