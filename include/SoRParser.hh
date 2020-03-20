@@ -45,10 +45,15 @@ class SoRParser {
 
     //! Initializes parser with set file and determines schema with up to the
     //! first 500 lines
-    bool initialize(std::string& filename);
+    bool initialize(const std::string& filename);
 
     //! Gets the type of the specified column
-    SoRType getColType(unsigned int col);
+    // TODO: change type
+    SoRType getColType(size_t col);
+
+    // TODO
+    size_t ncols() const;
+    size_t nrows() const;
 
     //! Returns the unparsed value at the given location if valid (cell is not
     //! empty), otherwise empty
