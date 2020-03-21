@@ -59,7 +59,7 @@ SoRParser::SoRParser()
  * @return true if parser successfully initialized with file
  * @return false if not
  */
-bool SoRParser::initialize(std::string& filename) {
+bool SoRParser::initialize(const std::string& filename) {
     try {
         setData(filename);
     } catch (std::ios_base::failure& e) {
@@ -82,6 +82,8 @@ bool SoRParser::initialize(std::string& filename) {
  * @return SoRType the type of the column
  */
 SoRType SoRParser::getColType(unsigned int col) { return colTypes.at(col); }
+
+unsigned int SoRParser::ncols() { return numCols; }
 
 std::optional<std::string> SoRParser::getColIdx(unsigned int col,
                                                 unsigned int offset) {

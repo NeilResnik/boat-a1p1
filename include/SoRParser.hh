@@ -47,13 +47,11 @@ class SoRParser {
     //! first 500 lines
     bool initialize(const std::string& filename);
 
-    //! Gets the type of the specified column
-    // TODO: change type
-    SoRType getColType(size_t col);
+    //! Get number of cols
+    unsigned int ncols();
 
-    // TODO
-    size_t ncols() const;
-    size_t nrows() const;
+    //! Gets the type of the specified column
+    SoRType getColType(unsigned int col);
 
     //! Returns the unparsed value at the given location if valid (cell is not
     //! empty), otherwise empty
