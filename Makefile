@@ -15,9 +15,17 @@ CXX_FLAGS   := -Wall -Wextra -Wpedantic -std=c++17 -I$(INCLUDE) -c -g
 AR          := ar
 AR_FLAGS    := rcs
 
-.PHONY: all clean
+.PHONY: all clean directories
 
-all: $(LIB)/libsorer.a
+all: directories $(LIB)/libsorer.a
+
+directories: $(OBJ) $(LIB)
+
+$(OBJ):
+	mkdir -p $@
+
+$(LIB):
+	mkdir -p $@
 
 $(LIB)/libsorer.a: $(OBJS)
 	$(AR) $(AR_FLAGS) $(LIB)/libsorer.a $(OBJS)
