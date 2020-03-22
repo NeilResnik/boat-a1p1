@@ -287,9 +287,9 @@ void SoRParser::readInitial() {
     // fill vector with first 500 lines of the file
     std::vector<std::string> sample;
     for (int ii = 0; ii < SCHEMA_DEF_LINES; ii++) {
-        if (data.eof()) break;
         std::string line;
         std::getline(data, line, '\n');
+        if (data.eof()) break;
         sample.push_back(line);
     }
 
@@ -437,6 +437,7 @@ void SoRParser::fillCache() {
     while (cache.front().size() < CACHE_SIZE && !data.eof()) {
         std::string line;
         std::getline(data, line, '\n');
+        std::cout<<"Line: " <<line <<std::endl;
         SoRRow row = parseFields(line);
         if (!data.eof() &&
             (dataStart + dataSize >= filesize || data.tellg() < dataEnd))
