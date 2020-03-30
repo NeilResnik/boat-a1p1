@@ -11,7 +11,7 @@ SRCS        := $(wildcard $(SRC)/*.cc)
 OBJS        := $(patsubst $(SRC)/%.cc, $(OBJ)/%.o, $(SRCS))
 
 CXX         := g++
-CXX_FLAGS   := -Wall -Wextra -Wpedantic -std=c++17 -I$(INCLUDE) -c -g
+CXX_FLAGS   := -Wall -Wextra -Wpedantic -g -O3 -std=c++17 -I$(INCLUDE) -c 
 AR          := ar
 AR_FLAGS    := rcs
 
