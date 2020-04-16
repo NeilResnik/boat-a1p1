@@ -33,6 +33,7 @@ $(LIB)/libsorer.a: $(OBJS)
 $(OBJ)/%.o: $(SRC)/%.cc
 	$(CXX) $(CXX_FLAGS) $^ -o $@
 
+.SILENT: clean
 clean:
 	rm $(OBJ)/*.o $(LIB)/*.a
 
